@@ -1,0 +1,17 @@
+name = "RolyVis"
+uuid = "6bae3f22-bab9-45f5-9fe3-d7d3c3b49738"
+authors = ["Maximilian HUEBL <maximilian.huebl@ist.ac.at>"]
+version = "0.1.0"
+
+[deps]
+Cairo = "159f3aea-2a34-519c-b102-8c37f9878175"
+Cairo_jll = "83423d85-b0ee-5818-9007-b63ccbeb887a"
+Luxor = "ae8d54c2-7ccd-5906-9d76-62fc9837b5bc"
+NautyGraphs = "7509a0a4-015a-4167-b44b-0799a1a2605e"
+Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+Roly = "1621a601-f9d4-49dc-b032-1328811fec3a"
+StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+
+[compat]
+Cairo_jll = "=1.16.1"
