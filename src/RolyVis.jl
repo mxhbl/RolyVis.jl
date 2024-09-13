@@ -6,6 +6,8 @@ using StaticArrays
 using Statistics: mean
 
 using Roly: AssemblySystem, Polyform, species, nsites
+using Graphs
+using LinearAlgebra
 
 export default_colors, draw_polyform, draw_polyform_grid, draw_polyforms
 
@@ -94,6 +96,20 @@ function draw_polyform(pform, assembly_system; r=200, species_colors=default_col
             Luxor.translate(x...)
             Luxor.rotate(-ψ * π)
             draw_ngon(polygons[particle], r; c=species_colors[spes[particle]])
+        end
+    end
+
+    pedges = edges(pform.anatomy)
+    for edge in pedges
+        rev(edge) ∉ pedges && continue
+
+        pos_i = Roly.get_sitepos(pform, assembly_system, edge.src)
+        pos_j = Roly.get_sitepos(pform, assembly_system, edge.dst)
+        if norm(pos_i - pos_j) > 1e-6
+            Luxor.@layer begin
+                Luxor.translate(pos_i...)
+                Luxor.circle(Luxor.Point(0, 0), 5, action = :fill)
+            end
         end
     end
 
