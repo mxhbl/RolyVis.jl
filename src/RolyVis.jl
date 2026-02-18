@@ -83,10 +83,13 @@ function draw_ngon(n, radius; colors="grey90", text=nothing, textcolor=colorant"
             Luxor.line(ngi * (1 - multiplyer * corner_r / a_in * offset),
                        ngo * (1 - multiplyer * corner_r / a_out * offset), :stroke)
         end
+
+        Luxor.fontsize(radius/2)
+        isnothing(text) || Luxor.text(string(text), Luxor.O + Luxor.Point(0, radius/6), halign=:center, valign=:center)
     end
 end
 
-function _draw_polyform(pform, assembly_system; size=200, colors=nothing)
+function _draw_polyform(pform, assembly_system; size=200, colors=nothing, label_species=false)
     spes = species(pform)
     np, nb = Roly.size(assembly_system)
     geoms = Roly.geometries(assembly_system)
@@ -125,7 +128,7 @@ function _draw_polyform(pform, assembly_system; size=200, colors=nothing)
             Luxor.translate(x...)
             Luxor.rotate(-ψ * π)
 
-            draw_ngon(polygons[particle], size; colors=color)
+            draw_ngon(polygons[particle], size; colors=color, text=label_species ? spes[particle] : nothing)
         end
     end
 
@@ -158,7 +161,7 @@ function _draw_polyform(pform, assembly_system; size=200, colors=nothing)
 end
 
 function draw_polyform_grid(structures, assembly_system; size=50, box_size=5, ncols=4, colors=nothing,
-                         structure_names=nothing)
+                         structure_names=nothing, label_species=false)
     nstructures = length(structures)
     nrows = nstructures ÷ ncols
     if nstructures % ncols != 0
@@ -174,7 +177,7 @@ function draw_polyform_grid(structures, assembly_system; size=50, box_size=5, nc
         for (structure, (pos, n)) in zip(structures, tiles)
             Luxor.@layer begin
                 Luxor.translate(pos)
-                _draw_polyform(structure, assembly_system; size, colors)
+                _draw_polyform(structure, assembly_system; size, colors, label_species)
             end
             i += 1
         end
@@ -183,7 +186,7 @@ function draw_polyform_grid(structures, assembly_system; size=50, box_size=5, nc
         for (structure, (pos, n), name) in zip(structures, tiles, structure_names)
             Luxor.@layer begin
                 Luxor.translate(pos)
-                _draw_polyform(structure, assembly_system; size, colors)
+                _draw_polyform(structure, assembly_system; size, colors, label_species)
                 Luxor.fontsize(size / 2)
                 Luxor.text(string(name), Luxor.Point(-2 * size / 2, -3 * size / 2))
             end
@@ -192,23 +195,23 @@ function draw_polyform_grid(structures, assembly_system; size=50, box_size=5, nc
     end
 end
 
-function draw_polyform(polyform::Polyform, assembly_system::AssemblySystem, filename="temp.png"; scale=300, colors=nothing, size=(1000, 1000))
+function draw_polyform(polyform::Polyform, assembly_system::AssemblySystem, filename="temp.png"; scale=300, colors=nothing, size=(1000, 1000), label_species=false)
     extension = splitext(filename)[end]
     if extension == ".png"
-        return Luxor.@png(_draw_polyform(polyform, assembly_system; size=scale, colors), size[1], size[2], filename)
+        return Luxor.@png(_draw_polyform(polyform, assembly_system; size=scale, colors, label_species), size[1], size[2], filename)
     elseif extension == ".pdf"
-        return Luxor.@pdf(_draw_polyform(polyform, assembly_system; size=scale, colors), size[1], size[2], filename)
+        return Luxor.@pdf(_draw_polyform(polyform, assembly_system; size=scale, colors, label_species), size[1], size[2], filename)
     else
         error("Can only render png or pdf.")
     end
 end
 
-function draw_polyforms(polyforms::AbstractVector{<:Polyform}, assembly_system::AssemblySystem, filename="temp.png"; scale=50, ncols=10, box_size=5, colors=nothing, size=(1000, 1000))
+function draw_polyforms(polyforms::AbstractVector{<:Polyform}, assembly_system::AssemblySystem, filename="temp.png"; scale=50, ncols=10, box_size=5, colors=nothing, size=(1000, 1000), label_species=false)
     extension = splitext(filename)[end]
     if extension == ".png"
-        return Luxor.@png(draw_polyform_grid(polyforms, assembly_system; size=scale, box_size=box_size, ncols=ncols, colors), size[1], size[2], filename)
+        return Luxor.@png(draw_polyform_grid(polyforms, assembly_system; size=scale, box_size=box_size, ncols=ncols, colors, label_species), size[1], size[2], filename)
     elseif extension == ".pdf"
-        return Luxor.@pdf(draw_polyform_grid(polyforms, assembly_system; size=scale, box_size=box_size, ncols=ncols, colors), size[1], size[2], filename)
+        return Luxor.@pdf(draw_polyform_grid(polyforms, assembly_system; size=scale, box_size=box_size, ncols=ncols, colors, label_species), size[1], size[2], filename)
     else
         error("Can only render png or pdf.")
     end
