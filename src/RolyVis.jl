@@ -117,7 +117,7 @@ function _draw_polyform(pform, assembly_system; size=200, colors=nothing, label_
 
     # Draw all the triangles at the correct positions
     for (particle, (x, ψ)) in enumerate(zip(xs, ψs))
-        n = nsites(geoms[particle])
+        n = nsites(geoms[spes[particle]])
         base_colors = colors[spes[particle]]
         if base_colors isa Color
             base_colors = scaled_colors(base_colors, n)
